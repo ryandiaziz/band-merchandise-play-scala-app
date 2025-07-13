@@ -1,0 +1,12 @@
+@import views.html.components.header.navbar
+@import views.html.components.footer.footer
+@import views.html.components.spinner.spinner
+
+@()(content: Html)
+
+@navbar()
+@spinner()
+<div id="content">
+    @content
+</div>
+@footer()

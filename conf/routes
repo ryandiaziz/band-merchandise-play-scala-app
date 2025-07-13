@@ -1,0 +1,38 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# https://www.playframework.com/documentation/latest/ScalaRouting
+# ~~~~
+
+# Pages Routes
+GET             /                                           controllers.PageController.indexPage()
+GET             /user                                       controllers.PageController.getUserPage()
+GET             /post                                       controllers.PageController.getPostPage()
+GET             /post/:id                                   controllers.PageController.postDetail(id: Long)
+
+# Barang API Routes
+GET             /api/barang/list                            controllers.api.BarangController.list(page: Int ?= 0)
+POST            /api/barang                                 controllers.api.BarangController.create
+GET             /api/barang/:id                             controllers.api.BarangController.detail(id: Int)
+PUT             /api/barang                                 controllers.api.BarangController.update()
+DELETE          /api/barang/:id                             controllers.api.BarangController.delete(id: Int)
+
+# Barang API Routes
+POST            /api/kategori                               controllers.api.KategoriController.create
+GET             /api/kategori                               controllers.api.KategoriController.list
+GET             /api/kategori/:id                           controllers.api.KategoriController.detail(id: Int)
+PUT             /api/kategori                               controllers.api.KategoriController.update()
+DELETE          /api/kategori/:id                           controllers.api.KategoriController.delete(id: Int)
+
+# Keranjang routes
+GET             /api/keranjang/user                         controllers.api.KeranjangController.list(page: Int ?= 1, size: Int ?= 10)
+GET             /api/keranjang/user/:userId                 controllers.api.KeranjangController.listByUserId(userId: Int)
+POST            /api/keranjang/tambah-item                  controllers.api.KeranjangController.tambahItemKeKeranjang()
+PUT             /api/keranjang                              controllers.api.KeranjangController.update
+DELETE          /api/keranjang/:id                          controllers.api.KeranjangController.delete(id: Int)
+
+POST            /api/user/create                            controllers.api.UserController.create()
+GET             /api/user/serve_photo/:id                   controllers.api.UserController.servePhoto(id: Int)
+GET             /api/user/unirest                           controllers.api.UserController.unirest()
+
+# Map static resources from the /public folder to the /assets URL path
+GET             /assets/*file                               controllers.Assets.versioned(path="/public", file: Asset)
