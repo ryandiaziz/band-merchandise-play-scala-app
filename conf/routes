@@ -10,36 +10,36 @@ GET             /post                                       controllers.PageCont
 GET             /post/:id                                   controllers.PageController.postDetail(id: Long)
 
 # --- MerchType Routes ---
-GET             /api/merchtypes                             controllers.MerchTypeController.getAllMerchTypes
-GET             /api/merchtypes/:id                         controllers.MerchTypeController.getMerchType(id: Int)
-POST            /api/merchtypes                             controllers.MerchTypeController.createMerchType
-PUT             /api/merchtypes/:id                         controllers.MerchTypeController.updateMerchType(id: Int)
-DELETE          /api/merchtypes/:id                         controllers.MerchTypeController.deleteMerchType(id: Int)
+GET             /api/merchtypes                             controllers.api.MerchTypeController.getAllMerchTypes
+GET             /api/merchtypes/:id                         controllers.api.MerchTypeController.getMerchType(id: Int)
+POST            /api/merchtypes                             controllers.api.MerchTypeController.createMerchType()
+PUT             /api/merchtypes/:id                         controllers.api.MerchTypeController.updateMerchType(id: Int)
+DELETE          /api/merchtypes/:id                         controllers.api.MerchTypeController.deleteMerchType(id: Int)
 
 # --- Merchandise Routes ---
-GET             /api/merchandise                            controllers.MerchandiseController.getAllMerchandise
-GET             /api/merchandise/:id                        controllers.MerchandiseController.getMerchandise(id: Int)
-POST            /api/merchandise                            controllers.MerchandiseController.createMerchandise
-PUT             /api/merchandise/:id                        controllers.MerchandiseController.updateMerchandise(id: Int)
-DELETE          /api/merchandise/:id                        controllers.MerchandiseController.deleteMerchandise(id: Int)
+#GET             /api/merchandise                            controllers.MerchandiseController.getAllMerchandise
+#GET             /api/merchandise/:id                        controllers.MerchandiseController.getMerchandise(id: Int)
+#POST            /api/merchandise                            controllers.MerchandiseController.createMerchandise
+#PUT             /api/merchandise/:id                        controllers.MerchandiseController.updateMerchandise(id: Int)
+#DELETE          /api/merchandise/:id                        controllers.MerchandiseController.deleteMerchandise(id: Int)
 
 # --- User Routes ---
-GET             /api/users                                  controllers.UserController.getAllUsers
-GET             /api/users/:id                              controllers.UserController.getUser(id: Int)
-POST            /api/users                                  controllers.UserController.createUser
-PUT             /api/users/:id                              controllers.UserController.updateUser(id: Int)
-DELETE          /api/users/:id                              controllers.UserController.deleteUser(id: Int)
+#GET             /api/users                                  controllers.UserController.getAllUsers
+#GET             /api/users/:id                              controllers.UserController.getUser(id: Int)
+#POST            /api/users                                  controllers.UserController.createUser
+#PUT             /api/users/:id                              controllers.UserController.updateUser(id: Int)
+#DELETE          /api/users/:id                              controllers.UserController.deleteUser(id: Int)
 
 # --- Cart Routes ---
-POST            /api/cart/add-item                          controllers.CartController.addItemToCart
-GET             /api/cart/:id                               controllers.CartController.getCart(id: Int)
-GET             /api/cart/user/:userId/active               controllers.CartController.getUserActiveCart(userId: Int)
+#POST            /api/cart/add-item                          controllers.CartController.addItemToCart
+#GET             /api/cart/:id                               controllers.CartController.getCart(id: Int)
+#GET             /api/cart/user/:userId/active               controllers.CartController.getUserActiveCart(userId: Int)
 
 # --- Transaction Routes ---
-GET             /api/transactions                           controllers.TransactionController.getAllTransactions
-GET             /api/transactions/:id                       controllers.TransactionController.getTransaction(id: Int)
-POST            /api/transactions                           controllers.TransactionController.createTransaction
-PUT             /api/transactions/:id                       controllers.TransactionController.updateTransaction(id: Int)
+#GET             /api/transactions                           controllers.TransactionController.getAllTransactions
+#GET             /api/transactions/:id                       controllers.TransactionController.getTransaction(id: Int)
+#POST            /api/transactions                           controllers.TransactionController.createTransaction
+#PUT             /api/transactions/:id                       controllers.TransactionController.updateTransaction(id: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET             /assets/*file                               controllers.Assets.versioned(path="/public", file: Asset)

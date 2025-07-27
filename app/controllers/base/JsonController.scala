@@ -5,10 +5,12 @@ import play.api.mvc.*
 
 trait JsonController extends BaseControllerHelpers {
 
+  // ======= SUCCESS =======
+
   def success(data: JsValue): Result = {
     Ok(
       Json.obj(
-        "status" -> "success",
+        "status" -> true,
         "data"   -> data
       )
     )
@@ -17,27 +19,40 @@ trait JsonController extends BaseControllerHelpers {
   def successMessage(message: String): Result = {
     Ok(
       Json.obj(
-        "status"  -> "success",
+        "status"  -> true,
         "message" -> message
       )
     )
   }
 
-  def successWithMessage(message: String, data: JsValue): Result = {
+  def successWithMessage(data: JsValue, message: String = "Berhasil mendapatkan data"): Result = {
     Ok(
       Json.obj(
-        "status"  -> "success",
+        "status"  -> true,
         "message" -> message,
         "data"    -> data
       )
     )
   }
 
+  def created(data: JsValue, message: String = "Data berhasil dibuat"): Result = {
+    Created(
+      Json.obj(
+        "status"  -> true,
+        "message" -> message,
+        "data"    -> data
+      )
+    )
+  }
+
+  // ======= ERROR / FAILURE =======
+
   def jsonMissingField(field: String): Result = {
     BadRequest(
       Json.obj(
-        "status"  -> "error",
-        "message" -> s"Field '$field' harus ada dan tidak boleh kosong"
+        "status"  -> false,
+        "message" -> s"Field '$field' harus ada dan tidak boleh kosong",
+        "data"    -> JsNull
       )
     )
   }
@@ -45,7 +60,7 @@ trait JsonController extends BaseControllerHelpers {
   def jsonFormatError(detail: String): Result = {
     BadRequest(
       Json.obj(
-        "status"  -> "error",
+        "status"  -> false,
         "message" -> "Format JSON tidak valid",
         "detail"  -> detail
       )
@@ -55,17 +70,19 @@ trait JsonController extends BaseControllerHelpers {
   def jsonExpected(): Result = {
     BadRequest(
       Json.obj(
-        "status"  -> "error",
-        "message" -> "Body harus dalam format JSON"
+        "status"  -> false,
+        "message" -> "Body harus dalam format JSON",
+        "data"    -> JsNull
       )
     )
   }
 
-  def dbError(): Result = {
+  def dbError(message: String = "Terjadi kesalahan saat menyimpan data"): Result = {
     InternalServerError(
       Json.obj(
-        "status"  -> "error",
-        "message" -> "Terjadi kesalahan saat menyimpan data"
+        "status"  -> false,
+        "message" -> message,
+        "data"    -> JsNull
       )
     )
   }
@@ -73,8 +90,9 @@ trait JsonController extends BaseControllerHelpers {
   def notFoundError(entity: String): Result = {
     NotFound(
       Json.obj(
-        "status"  -> "error",
-        "message" -> s"$entity tidak ditemukan"
+        "status"  -> false,
+        "message" -> s"$entity tidak ditemukan",
+        "data"    -> JsNull
       )
     )
   }
@@ -82,8 +100,9 @@ trait JsonController extends BaseControllerHelpers {
   def unauthorizedError(): Result = {
     Unauthorized(
       Json.obj(
-        "status"  -> "error",
-        "message" -> "Tidak memiliki izin untuk melakukan aksi ini"
+        "status"  -> false,
+        "message" -> "Tidak memiliki izin untuk melakukan aksi ini",
+        "data"    -> JsNull
       )
     )
   }
@@ -91,10 +110,22 @@ trait JsonController extends BaseControllerHelpers {
   def serverError(detail: String): Result = {
     InternalServerError(
       Json.obj(
-        "status"  -> "error",
+        "status"  -> false,
         "message" -> "Kesalahan server",
         "detail"  -> detail
       )
     )
+  }
+
+  def customResponse(
+      statusCode: Int,
+      status: Boolean,
+      message: Option[String] = None,
+      data: Option[JsValue] = None
+  ): Result = {
+    val base        = Json.obj("status" -> status)
+    val withMessage = message.map(m => base + ("message" -> JsString(m))).getOrElse(base)
+    val withData    = data.map(d => withMessage + ("data" -> d)).getOrElse(withMessage)
+    Results.Status(statusCode)(withData)
   }
 }

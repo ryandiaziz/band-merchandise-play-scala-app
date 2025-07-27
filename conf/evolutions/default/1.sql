@@ -1,44 +1,90 @@
-# --- !Ups
+--- !Ups
+-- Ini adalah script migrasi untuk membuat tabel
 
--- Tabel kategori
-CREATE TABLE kategori
+CREATE TABLE merch_type
 (
-    kategori_id SERIAL PRIMARY KEY,
-    nama        VARCHAR(100) NOT NULL,
-    is_delete   BOOLEAN      NOT NULL DEFAULT FALSE
+    id          SERIAL PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_delete   BOOLEAN   DEFAULT FALSE
 );
 
--- Tabel barang
-CREATE TABLE barang
+CREATE TABLE merchandise
 (
-    barang_id   SERIAL PRIMARY KEY,
-    nama        VARCHAR(100) NOT NULL,
-    kategori_id INTEGER      NOT NULL REFERENCES kategori (kategori_id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    harga       DOUBLE PRECISION,
-    stok        INTEGER,
-    is_delete   BOOLEAN      NOT NULL DEFAULT FALSE
+    id            SERIAL PRIMARY KEY,
+    title         VARCHAR(255)   NOT NULL,
+    band_name     VARCHAR(255)   NOT NULL,
+    merch_type_id INT            NOT NULL,
+    description   TEXT,
+    price         DECIMAL(10, 2) NOT NULL,
+    image_url     VARCHAR(255),
+    stock         INT            NOT NULL DEFAULT 0,
+    created_at    TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    is_delete     BOOLEAN                 DEFAULT FALSE,
+    FOREIGN KEY (merch_type_id) REFERENCES merch_type (id)
 );
 
--- Seed data kategori
-INSERT INTO kategori (nama)
-VALUES ('Elektronik'),
-       ('Pakaian'),
-       ('Makanan'),
-       ('Peralatan Rumah Tangga');
+CREATE TABLE users
+(
+    id         SERIAL PRIMARY KEY,
+    name       VARCHAR(255)        NOT NULL,
+    email      VARCHAR(255) UNIQUE NOT NULL,
+    city_id    INT, -- Asumsi ada tabel city, jika tidak ini bisa VARCHAR atau dihapus
+    address    TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_delete  BOOLEAN   DEFAULT FALSE
+);
 
--- Seed data barang
-INSERT INTO barang (nama, kategori_id, harga, stok)
-VALUES ('Laptop ASUS ROG', 1, 18000000.00, 10),
-       ('Smartphone Samsung', 1, 7500000.00, 25),
-       ('Kaos Polos Hitam', 2, 75000.00, 100),
-       ('Celana Jeans', 2, 150000.00, 60),
-       ('Mie Instan', 3, 3000.00, 500),
-       ('Susu Kental Manis', 3, 12000.00, 200),
-       ('Vacuum Cleaner', 4, 850000.00, 15),
-       ('Dispenser Air', 4, 450000.00, 20);
+CREATE TABLE cart
+(
+    id         SERIAL PRIMARY KEY,
+    user_id    INT            NOT NULL,
+    price      DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    status     VARCHAR(50)    NOT NULL DEFAULT 'active', -- 'active', 'ordered', 'cancelled'
+    created_at TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    is_delete  BOOLEAN                 DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
 
-# --- !Downs
-DROP TABLE IF EXISTS barang;
-DROP TABLE IF EXISTS kategori;
+CREATE TABLE cart_merch
+(
+    id             SERIAL PRIMARY KEY,
+    cart_id        INT            NOT NULL,
+    merchandise_id INT            NOT NULL,
+    qty            INT            NOT NULL,
+    unit_price     DECIMAL(10, 2) NOT NULL,
+    total_price    DECIMAL(10, 2) NOT NULL,
+    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_delete      BOOLEAN   DEFAULT FALSE,
+    FOREIGN KEY (cart_id) REFERENCES cart (id),
+    FOREIGN KEY (merchandise_id) REFERENCES merchandise (id)
+);
+
+CREATE TABLE transactions
+(
+    id                     SERIAL PRIMARY KEY,
+    cart_id                INT            NOT NULL UNIQUE, -- Setiap transaksi terkait satu keranjang unik
+    cart_price             DECIMAL(10, 2) NOT NULL,
+    delivery_service_price DECIMAL(10, 2) NOT NULL,
+    total_price            DECIMAL(10, 2) NOT NULL,
+    created_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_delete              BOOLEAN   DEFAULT FALSE,
+    FOREIGN KEY (cart_id) REFERENCES cart (id)
+);
+
+--- !Downs
+-- Ini adalah script migrasi untuk menghapus tabel (urutan terbalik dari pembuatan)
+
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS cart_merch;
+DROP TABLE IF EXISTS cart;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS merchandise;
+DROP TABLE IF EXISTS merch_type;
