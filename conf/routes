@@ -17,11 +17,11 @@ PUT             /api/merchtypes/:id                         controllers.api.Merc
 DELETE          /api/merchtypes/:id                         controllers.api.MerchTypeController.deleteMerchType(id: Int)
 
 # --- Merchandise Routes ---
-#GET             /api/merchandise                            controllers.MerchandiseController.getAllMerchandise
-#GET             /api/merchandise/:id                        controllers.MerchandiseController.getMerchandise(id: Int)
-#POST            /api/merchandise                            controllers.MerchandiseController.createMerchandise
-#PUT             /api/merchandise/:id                        controllers.MerchandiseController.updateMerchandise(id: Int)
-#DELETE          /api/merchandise/:id                        controllers.MerchandiseController.deleteMerchandise(id: Int)
+GET             /api/merchandise                            controllers.api.MerchandiseController.getAllMerchTypes
+GET             /api/merchandise/:id                        controllers.api.MerchandiseController.getMerchType(id: Int)
+POST            /api/merchandise                            controllers.api.MerchandiseController.createMerchType()
+PUT             /api/merchandise/:id                        controllers.api.MerchandiseController.updateMerchType(id: Int)
+DELETE          /api/merchandise/:id                        controllers.api.MerchandiseController.deleteMerchType(id: Int)
 
 # --- User Routes ---
 #GET             /api/users                                  controllers.UserController.getAllUsers

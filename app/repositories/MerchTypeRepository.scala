@@ -8,7 +8,6 @@ import scala.concurrent.{Future, ExecutionContext}
 import repositories.base.BaseRepository
 
 @Singleton
-// MerchTypeRepository sekarang meng-extend BaseRepository
 class MerchTypeRepository @Inject() (db: Database)(implicit ec: ExecutionContext) extends BaseRepository(db) {
 
   // --- Implementasi properti abstrak dari BaseRepository ---
@@ -23,7 +22,7 @@ class MerchTypeRepository @Inject() (db: Database)(implicit ec: ExecutionContext
       "description" -> merchType.description
     ).map { idOpt =>
       // Setelah insert, kembalikan objek dengan ID yang sudah di-generate
-      merchType.copy(id = idOpt)
+      merchType.copy(id = idOpt.get)
     }
   }
 
@@ -45,17 +44,17 @@ class MerchTypeRepository @Inject() (db: Database)(implicit ec: ExecutionContext
   def update(merchType: MerchType): Future[Option[MerchType]] = {
     executeUpdate(
       s"UPDATE $tableName SET name = {name}, description = {description}, updated_at = NOW() WHERE id = {id}",
-      "id"          -> merchType.id.get, // Asumsi ID selalu ada untuk update
+      "id"          -> merchType.id, // Asumsi ID selalu ada untuk update
       "name"        -> merchType.name,
       "description" -> merchType.description
     ).flatMap { affectedRows =>
       // Setelah update, kita fetch ulang data terbaru untuk memastikan konsistensi
-      if (affectedRows > 0) findById(merchType.id.get) else Future.successful(None)
+      if (affectedRows > 0) findById(merchType.id) else Future.successful(None)
     }
   }
 
   // DELETE (Hard Delete): Langsung panggil helper delete dari BaseRepository
-  override def delete(id: Int): Future[Int] = {
+  def deleteMerchType(id: Int): Future[Int] = {
     super.delete(id)
   }
 
