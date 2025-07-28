@@ -99,7 +99,7 @@ abstract class BaseRepository @Inject() (db: Database)(implicit ec: ExecutionCon
     */
   def softDelete(id: Int): Future[Boolean] = {
     executeUpdate(
-      s"UPDATE $tableName SET is_delete = true, updated_at = NOW() WHERE id = {id}",
+      s"UPDATE $tableName SET is_delete = true, updated_at = NOW() WHERE id = {id} AND is_delete = false",
       "id" -> id
     ).map(_ > 0)
   }

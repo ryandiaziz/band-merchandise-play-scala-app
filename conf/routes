@@ -10,25 +10,25 @@ GET             /post                                       controllers.PageCont
 GET             /post/:id                                   controllers.PageController.postDetail(id: Long)
 
 # --- MerchType Routes ---
-GET             /api/merchtypes                             controllers.api.MerchTypeController.getAllMerchTypes
+GET             /api/merchtypes                             controllers.api.MerchTypeController.getAllMerchTypes()
 GET             /api/merchtypes/:id                         controllers.api.MerchTypeController.getMerchType(id: Int)
 POST            /api/merchtypes                             controllers.api.MerchTypeController.createMerchType()
 PUT             /api/merchtypes/:id                         controllers.api.MerchTypeController.updateMerchType(id: Int)
 DELETE          /api/merchtypes/:id                         controllers.api.MerchTypeController.deleteMerchType(id: Int)
 
 # --- Merchandise Routes ---
-GET             /api/merchandise                            controllers.api.MerchandiseController.getAllMerchTypes
+GET             /api/merchandise                            controllers.api.MerchandiseController.getAllMerchTypes()
 GET             /api/merchandise/:id                        controllers.api.MerchandiseController.getMerchType(id: Int)
 POST            /api/merchandise                            controllers.api.MerchandiseController.createMerchType()
 PUT             /api/merchandise/:id                        controllers.api.MerchandiseController.updateMerchType(id: Int)
 DELETE          /api/merchandise/:id                        controllers.api.MerchandiseController.deleteMerchType(id: Int)
 
 # --- User Routes ---
-#GET             /api/users                                  controllers.UserController.getAllUsers
-#GET             /api/users/:id                              controllers.UserController.getUser(id: Int)
-#POST            /api/users                                  controllers.UserController.createUser
-#PUT             /api/users/:id                              controllers.UserController.updateUser(id: Int)
-#DELETE          /api/users/:id                              controllers.UserController.deleteUser(id: Int)
+GET             /api/users                                  controllers.api.UserController.getAllUsers()
+GET             /api/users/:id                              controllers.api.UserController.getUser(id: Int)
+POST            /api/users                                  controllers.api.UserController.createUser()
+PUT             /api/users/:id                              controllers.api.UserController.updateUser(id: Int)
+DELETE          /api/users/:id                              controllers.api.UserController.deleteUser(id: Int)
 
 # --- Cart Routes ---
 #POST            /api/cart/add-item                          controllers.CartController.addItemToCart

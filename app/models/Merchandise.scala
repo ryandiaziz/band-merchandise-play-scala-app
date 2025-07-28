@@ -2,7 +2,7 @@ package models
 
 import anorm.*
 import anorm.SqlParser.*
-import play.api.libs.json.{Json, OFormat, OWrites, Reads}
+import play.api.libs.json.{Json, OWrites, Reads}
 import utils.JsonConfig
 import java.time.LocalDateTime
 
@@ -20,19 +20,17 @@ case class Merchandise(
 )
 
 object Merchandise {
-  implicit val requestReads: Reads[MerchandiseRequest] = Json.reads[MerchandiseRequest]
-
-  implicit val reads: Reads[Merchandise] = Json.reads[Merchandise]
+  implicit val merchandiseReads: Reads[Merchandise] = Json.reads[Merchandise]
   implicit val merchandiseWrites: OWrites[Merchandise] = OWrites[Merchandise] { merch =>
     Json.obj(
-      "id"          -> merch.id,
-      "title"       -> merch.title,
-      "band_name"    -> merch.bandName,
+      "id"            -> merch.id,
+      "title"         -> merch.title,
+      "band_name"     -> merch.bandName,
       "merch_type_id" -> merch.merchTypeId,
-      JsonConfig.optionalField("description", merch.description),
-      "price"       -> merch.price,
+      "price"         -> merch.price,
+      "stock"         -> merch.stock,
       JsonConfig.optionalField("image_url", merch.imageUrl),
-      "stock"       -> merch.stock,
+      JsonConfig.optionalField("description", merch.description),
       JsonConfig.optionalField("created_at", merch.createdAt.map(_.toString)),
       JsonConfig.optionalField("updated_at", merch.updatedAt.map(_.toString))
     )
@@ -62,4 +60,6 @@ object Merchandise {
       imageUrl: Option[String],
       stock: Int
   )
+  
+  implicit val merchandiseRequestReads: Reads[MerchandiseRequest] = Json.reads[MerchandiseRequest]
 }
