@@ -20,7 +20,7 @@ abstract class BaseRepository @Inject() (db: Database)(implicit ec: ExecutionCon
 //  protected def parser: RowParser[Any] // Menggunakan Any karena parser spesifik akan ada di subclass
 
   // --- Helper untuk operasi SELECT ---
-  private def executeSingle[T](query: String, params: NamedParameter*)(implicit
+  def executeSingle[T](query: String, params: NamedParameter*)(implicit
       parser: RowParser[T]
   ): Future[Option[T]] = Future {
     db.withConnection { implicit connection =>
@@ -30,7 +30,7 @@ abstract class BaseRepository @Inject() (db: Database)(implicit ec: ExecutionCon
     }
   }
 
-  private def executeList[T](query: String, params: NamedParameter*)(implicit parser: RowParser[T]): Future[Seq[T]] =
+  def executeList[T](query: String, params: NamedParameter*)(implicit parser: RowParser[T]): Future[Seq[T]] =
     Future {
       db.withConnection { implicit connection =>
         SQL(query)

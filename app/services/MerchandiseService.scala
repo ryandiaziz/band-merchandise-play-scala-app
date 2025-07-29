@@ -1,10 +1,10 @@
 package services
 
-import javax.inject.*
 import models.{MerchType, Merchandise}
 import repositories.{MerchTypeRepository, MerchandiseRepository}
+
+import javax.inject.*
 import scala.concurrent.{ExecutionContext, Future}
-import java.time.LocalDateTime
 
 @Singleton
 class MerchandiseService @Inject() (
@@ -30,37 +30,14 @@ class MerchandiseService @Inject() (
     }
   }
 
-  def getMerchandise(id: Int): Future[Option[Merchandise]] = merchandiseRepo.findById(id)
-  def getAllMerchandise: Future[Seq[Merchandise]]        = merchandiseRepo.findAll()
   def updateMerchType(id: Int, request: Merchandise.MerchandiseRequest): Future[Option[Merchandise]] =
     merchandiseRepo.update(id, request)
+  
+  def getMerchandise(id: Int): Future[Option[Merchandise]] = merchandiseRepo.findById(id)
 
-//  def updateMerchandise_(
-//      id: Int,
-//      request: Merchandise.MerchandiseRequest
-//  ): Future[Either[String, Option[Merchandise]]] = {
-//    merchandiseRepo.findById(id).flatMap {
-//      case Some(existingMerch) =>
-//        merchTypeRepo.findById(request.merchTypeId).flatMap {
-//          case Some(_) =>
-//            val updatedMerch = existingMerch.copy(
-//              title = request.title,
-//              bandName = request.bandName,
-//              merchTypeId = request.merchTypeId,
-//              description = request.description,
-//              price = request.price,
-//              imageUrl = request.imageUrl,
-//              stock = request.stock
-//            )
-//            merchandiseRepo.update(updatedMerch).map(Right(_))
-//          case None =>
-//            Future.successful(Left(s"MerchType with ID ${request.merchTypeId} not found."))
-//        }
-//      case None =>
-//        Future.successful(Right(None)) // Merchandise not found
-//    }
-//  }
+  def getAllMerchandise: Future[Seq[Merchandise]] = merchandiseRepo.findAll()
 
-  def deleteMerchandise(id: Int): Future[Int]         = merchandiseRepo.deleteMerch(id)
+  def deleteMerchandise(id: Int): Future[Int] = merchandiseRepo.deleteMerch(id)
+
   def softDeleteMerchandise(id: Int): Future[Boolean] = merchandiseRepo.softDeleteMerch(id)
 }

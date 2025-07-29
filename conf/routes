@@ -31,15 +31,17 @@ PUT             /api/users/:id                              controllers.api.User
 DELETE          /api/users/:id                              controllers.api.UserController.deleteUser(id: Int)
 
 # --- Cart Routes ---
-#POST            /api/cart/add-item                          controllers.CartController.addItemToCart
-#GET             /api/cart/:id                               controllers.CartController.getCart(id: Int)
-#GET             /api/cart/user/:userId/active               controllers.CartController.getUserActiveCart(userId: Int)
+POST            /api/cart/add-item                          controllers.api.CartController.addItemToCart()
+GET             /api/cart/:id                               controllers.api.CartController.getCart(id: Int)
+GET             /api/cart/user/:userId/active               controllers.api.CartController.getUserActiveCart(userId: Int)
+DELETE          /api/cart/:id                               controllers.api.CartController.softDeleteCart(id: Int)
 
 # --- Transaction Routes ---
-#GET             /api/transactions                           controllers.TransactionController.getAllTransactions
-#GET             /api/transactions/:id                       controllers.TransactionController.getTransaction(id: Int)
-#POST            /api/transactions                           controllers.TransactionController.createTransaction
-#PUT             /api/transactions/:id                       controllers.TransactionController.updateTransaction(id: Int)
+GET             /api/transactions                           controllers.api.TransactionController.getAllTransactions()
+GET             /api/transactions/:id                       controllers.api.TransactionController.getTransaction(id: Int)
+POST            /api/transactions                           controllers.api.TransactionController.createTransaction()
+PUT             /api/transactions/:id                       controllers.api.TransactionController.updateTransaction(id: Int)
+DELETE          /api/transactions/:id                       controllers.api.TransactionController.deleteTransaction(id: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET             /assets/*file                               controllers.Assets.versioned(path="/public", file: Asset)
