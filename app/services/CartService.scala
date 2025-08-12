@@ -34,7 +34,7 @@ class CartService @Inject() (
 
       currentCartOpt <- request.cartId match {
         case Some(cartId) => cartRepo.findById(cartId)
-        case None         => Future.successful(None)
+        case None         => cartRepo.findUserActiveCart(request.userId)
       }
 
       cart <- currentCartOpt match {
