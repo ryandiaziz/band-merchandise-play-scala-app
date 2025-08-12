@@ -11,6 +11,7 @@ GET             /post/:id                                   controllers.PageCont
 
 # --- MerchType Routes ---
 GET             /api/merchtypes                             controllers.api.MerchTypeController.getAllMerchTypes()
+GET             /api/merchtypes-test                        controllers.api.MerchTypeController.getAllMerchTypesTest()
 GET             /api/merchtypes/:id                         controllers.api.MerchTypeController.getMerchType(id: Int)
 POST            /api/merchtypes                             controllers.api.MerchTypeController.createMerchType()
 PUT             /api/merchtypes/:id                         controllers.api.MerchTypeController.updateMerchType(id: Int)

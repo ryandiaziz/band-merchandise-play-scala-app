@@ -39,6 +39,13 @@ abstract class BaseRepository @Inject() (db: Database)(implicit ec: ExecutionCon
       }
     }
 
+  def executeListTest[T](query: String, params: NamedParameter*)(implicit parser: RowParser[T]): Seq[T] =
+    db.withConnection { implicit connection =>
+      SQL(query)
+        .on(params: _*)
+        .as(parser.*)
+    }
+
   // --- Helper untuk operasi INSERT ---
   protected def executeInsert(query: String, params: NamedParameter*): Future[Option[Int]] = Future {
     db.withConnection { implicit connection =>
@@ -89,6 +96,10 @@ abstract class BaseRepository @Inject() (db: Database)(implicit ec: ExecutionCon
     */
   def findAll[E](implicit specificParser: RowParser[E]): Future[Seq[E]] = {
     executeList[E](s"SELECT * FROM $tableName WHERE is_delete = false")
+  }
+
+  def findAllTest[E](implicit specificParser: RowParser[E]): Seq[E] = {
+    executeListTest[E](s"SELECT * FROM $tableName WHERE is_delete = false")
   }
 
   /** Melakukan soft delete (mengubah is_delete menjadi true). Asumsi tabel memiliki kolom 'is_delete' dan 'updated_at'.

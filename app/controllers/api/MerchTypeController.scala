@@ -45,6 +45,11 @@ class MerchTypeController @Inject() (
     }
   }
 
+  def getAllMerchTypesTest: Action[AnyContent] = Action {
+    val merchTypes = merchTypeService.getAllMerchTypesTest // Seq[MerchType]
+    successWithMessage(Json.toJson(merchTypes))
+  }
+
   def updateMerchType(id: Int): Action[JsValue] = Action(parse.json).async { implicit request =>
     request.body
       .validate[MerchType]
