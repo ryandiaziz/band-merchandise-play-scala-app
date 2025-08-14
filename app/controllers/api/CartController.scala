@@ -17,7 +17,7 @@ class CartController @Inject() (
     extends BaseController
     with JsonController {
 
-  def addItemToCart() = Action(parse.json).async { implicit request: Request[JsValue] =>
+  def addItemToCart(): Action[JsValue] = Action(parse.json).async { implicit request: Request[JsValue] =>
     request.body
       .validate[CartMerch.AddItemToCartRequest]
       .fold(
@@ -28,10 +28,8 @@ class CartController @Inject() (
         },
         addRequest => {
           cartService.addItemToCart(addRequest).map {
-            case Right(cart) =>
-              created(Json.toJson(cart))
-            case Left(errorMessage) =>
-              notFoundError(errorMessage)
+            case Some(cart) => created(Json.toJson(cart))
+            case None       => notFoundError(s"Terjadi kesalahan")
           }
         }
       )

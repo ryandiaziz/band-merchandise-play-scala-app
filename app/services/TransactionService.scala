@@ -14,7 +14,7 @@ class TransactionService @Inject() (
     cartRepo: CartRepository
 )(implicit ec: ExecutionContext) {
 
-  def createTransaction(request: Transaction.CreateTransactionRequest): Future[Either[String, Transaction]] = Future {
+  def createTransaction(request: Transaction.CreateTransactionRequest): Future[Option[Transaction]] = Future {
     db.withTransaction { implicit connection =>
       val cart =
         cartRepo.findById(request.cartId).getOrElse(throw new Exception(s"Cart with ID ${request.cartId} not found."))
@@ -41,10 +41,8 @@ class TransactionService @Inject() (
 
       cartRepo.update(cart.copy(status = "ordered")).get
 
-      Right(createdTxn)
+      Some(createdTxn)
     }
-  }.recover { case e: Exception =>
-    Left(s"Failed to create transaction: ${e.getMessage}")
   }
 
   def getTransaction(id: Int): Future[Option[Transaction]] = Future {
@@ -53,7 +51,7 @@ class TransactionService @Inject() (
     }
   }
 
-  def getAllTransactions(): Future[Seq[Transaction]] = Future {
+  def getAllTransactions: Future[Seq[Transaction]] = Future {
     db.withConnection { implicit connection =>
       transactionRepo.findAll()
     }

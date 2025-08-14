@@ -27,8 +27,8 @@ class MerchandiseController @Inject() (
           ),
         merchType =>
           merchandiseService.createMerchandise(merchType).map {
-            case Right(merchandise) => created(Json.toJson(merchandise))
-            case Left(errorMessage) => notFoundError(errorMessage)
+            case Some(merchandise) => created(Json.toJson(merchandise))
+            case None              => notFoundError(s"Merchandise type tidak ada ditemukan")
           }
       )
   }
@@ -57,7 +57,7 @@ class MerchandiseController @Inject() (
         merchTypeUpdate =>
           merchandiseService.updateMerchType(id, merchTypeUpdate).map {
             case Some(updatedMerchType) => created(Json.toJson(updatedMerchType))
-            case None                   => notFoundError(s"Merchandise $id tidak ada perubahan atau")
+            case None                   => notFoundError(s"Merchandise $id tidak ada perubahan atau terjadi kesalahan")
           }
       )
   }

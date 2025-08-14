@@ -4,23 +4,20 @@ import models.*
 import play.api.db.Database
 import repositories.{CartRepository, MerchandiseRepository, UserRepository}
 
-import java.sql.Connection
 import java.time.LocalDateTime
 import javax.inject.*
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CartService @Inject() (
-    db: Database, // Injeksi db: Database di sini untuk mengelola transaksi
+    db: Database,
     cartRepo: CartRepository,
     merchandiseRepo: MerchandiseRepository,
     userRepo: UserRepository
 )(implicit ec: ExecutionContext) {
 
-  def addItemToCart(request: CartMerch.AddItemToCartRequest): Future[Either[String, Cart]] = Future {
-    // --- Seluruh logika transaksi dibungkus dalam db.withTransaction ---
+  def addItemToCart(request: CartMerch.AddItemToCartRequest): Future[Option[Cart]] = Future {
     db.withTransaction { implicit connection =>
-      // Semua panggilan ke repository di sini SINKRON
       val userOpt = userRepo.findById(request.userId)
       val user    = userOpt.getOrElse(throw new Exception(s"User with ID ${request.userId} not found."))
 
@@ -76,15 +73,12 @@ class CartService @Inject() (
 
       val allCartMerchItems = cartRepo.findCartMerchByCartId(cart.id)
       val newCartTotalPrice = allCartMerchItems.map(_.totalPrice).sum
-      val finalCart = cartRepo.update(cart.copy(price = newCartTotalPrice, updatedAt = Some(LocalDateTime.now()))).get
+      val finalCart = cartRepo.update(cart.copy(price = newCartTotalPrice, updatedAt = Some(LocalDateTime.now())))
 
-      Right(finalCart) // Hasil akhir
+      finalCart // Hasil akhir
     }
-  }.recover { case e: Exception =>
-    Left(s"Failed to add item to cart: ${e.getMessage}")
   }
-
-  // --- Operasi READ: Menggunakan db.withConnection ---
+  
   def getCart(id: Int): Future[Option[Cart]] = Future {
     db.withConnection { implicit connection =>
       cartRepo.findById(id)

@@ -17,7 +17,7 @@ class TransactionController @Inject() (
     extends BaseController
     with JsonController {
 
-  def createTransaction() = Action(parse.json).async { implicit request =>
+  def createTransaction(): Action[JsValue] = Action(parse.json).async { implicit request =>
     request.body
       .validate[Transaction.CreateTransactionRequest]
       .fold(
@@ -27,26 +27,26 @@ class TransactionController @Inject() (
           ),
         transactionReq =>
           transactionService.createTransaction(transactionReq).map {
-            case Right(transaction) => created(Json.toJson(transaction))
-            case Left(errorMessage) => notFoundError(errorMessage)
+            case Some(transaction) => created(Json.toJson(transaction))
+            case None              => notFoundError(s"Transaction tidak ada perubahan atau terjadi kesalahan")
           }
       )
   }
 
-  def getTransaction(id: Int) = Action.async {
+  def getTransaction(id: Int): Action[AnyContent] = Action.async {
     transactionService.getTransaction(id).map {
       case Some(transaction) => successWithMessage(Json.toJson(transaction))
       case None              => notFoundError(s"Transaction ID $id")
     }
   }
 
-  def getAllTransactions() = Action.async {
-    transactionService.getAllTransactions().map { transactions =>
+  def getAllTransactions: Action[AnyContent] = Action.async {
+    transactionService.getAllTransactions.map { transactions =>
       successWithMessage(Json.toJson(transactions))
     }
   }
 
-  def updateTransaction(id: Int) = Action(parse.json).async { implicit request =>
+  def updateTransaction(id: Int): Action[JsValue] = Action(parse.json).async { implicit request =>
     request.body
       .validate[Transaction]
       .fold(
@@ -62,7 +62,7 @@ class TransactionController @Inject() (
       )
   }
 
-  def deleteTransaction(id: Int) = Action.async {
+  def deleteTransaction(id: Int): Action[AnyContent] = Action.async {
     transactionService.softDeleteTransaction(id).map { success =>
       if (success) successMessage(s"Transaction ID $id deleted successfully")
       else notFoundError(s"Transaction ID $id")

@@ -2,12 +2,11 @@ package repositories
 
 import anorm.*
 import models.MerchType
-import play.api.db.*
 import repositories.base.BaseRepositoryNew
 
 import java.sql.Connection
 import javax.inject.*
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class MerchTypeRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRepositoryNew() {
