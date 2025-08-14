@@ -1,18 +1,19 @@
 package repositories
 
-import javax.inject._
-import play.api.db._
-import anorm._
+import anorm.*
 import models.Merchandise
-import scala.concurrent.{Future, ExecutionContext}
-import repositories.base.BaseRepository
+import repositories.base.BaseRepositoryNew
+
+import java.sql.Connection
+import javax.inject.*
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class MerchandiseRepository @Inject() (db: Database)(implicit ec: ExecutionContext) extends BaseRepository(db) {
+class MerchandiseRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRepositoryNew() {
   override protected val tableName: String = "merchandise"
 
-  def create(merchandise: Merchandise): Future[Merchandise] = {
-    executeInsert(
+  def create(merchandise: Merchandise)(implicit connection: Connection): Merchandise = {
+    val resultId = executeInsert(
       s"""
         |INSERT INTO $tableName(title, band_name, merch_type_id, description, price, image_url, stock, created_at, updated_at)
         |VALUES ({title}, {bandName}, {merchTypeId}, {description}, {price}, {imageUrl}, {stock}, NOW(), NOW())
@@ -24,21 +25,23 @@ class MerchandiseRepository @Inject() (db: Database)(implicit ec: ExecutionConte
       "price"       -> merchandise.price,
       "imageUrl"    -> merchandise.imageUrl,
       "stock"       -> merchandise.stock
-    ).map { idOpt =>
-      merchandise.copy(id = idOpt.get)
-    }
+    )
+
+    merchandise.copy(id = resultId.get)
   }
 
-  def findById(id: Int): Future[Option[Merchandise]] = {
+  def findById(id: Int)(implicit connection: Connection): Option[Merchandise] = {
     super.findById[Merchandise](id)(Merchandise.parser)
   }
 
-  def findAll(): Future[Seq[Merchandise]] = {
+  def findAll()(implicit connection: Connection): Seq[Merchandise] = {
     super.findAll[Merchandise](Merchandise.parser)
   }
 
-  def update(id: Int, merchandiseReq: Merchandise.MerchandiseRequest): Future[Option[Merchandise]] = {
-    executeUpdate(
+  def update(id: Int, merchandiseReq: Merchandise)(implicit
+      connection: Connection
+  ): Option[Merchandise] = {
+    val affectedRows = executeUpdate(
       s"""
         |UPDATE $tableName
         |SET title = {title}, band_name = {bandName}, merch_type_id = {merchTypeId},
@@ -54,26 +57,26 @@ class MerchandiseRepository @Inject() (db: Database)(implicit ec: ExecutionConte
       "price"       -> merchandiseReq.price,
       "imageUrl"    -> merchandiseReq.imageUrl,
       "stock"       -> merchandiseReq.stock
-    ).flatMap { affectedRows =>
-      if (affectedRows > 0) findById(id) else Future.successful(None)
-    }
+    )
+
+    if (affectedRows > 0) findById(id) else None
   }
 
-  def updateStock(id: Int, newStock: Int): Future[Option[Merchandise]] = {
-    executeUpdate(
+  def updateStock(id: Int, newStock: Int)(implicit connection: Connection): Option[Merchandise] = {
+    val affectedRows = executeUpdate(
       s"UPDATE $tableName SET stock = {newStock}, updated_at = NOW() WHERE id = {id}",
       "id"       -> id,
       "newStock" -> newStock
-    ).flatMap { affectedRows =>
-      if (affectedRows > 0) findById(id) else Future.successful(None)
-    }
+    )
+
+    if (affectedRows > 0) findById(id) else None
   }
 
-  def deleteMerch(id: Int): Future[Int] = {
+  def deleteMerch(id: Int)(implicit connection: Connection): Int = {
     super.delete(id)
   }
 
-  def softDeleteMerch(id: Int): Future[Boolean] = {
+  def softDeleteMerch(id: Int)(implicit connection: Connection): Boolean = {
     super.softDelete(id)
   }
 }

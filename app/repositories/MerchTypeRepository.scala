@@ -1,66 +1,52 @@
 package repositories
 
-import javax.inject._
-import play.api.db._ // Tetap diimport karena diinject ke BaseRepository
-import anorm._
+import anorm.*
 import models.MerchType
-import scala.concurrent.{Future, ExecutionContext}
-import repositories.base.BaseRepository
+import play.api.db.*
+import repositories.base.BaseRepositoryNew
+
+import java.sql.Connection
+import javax.inject.*
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class MerchTypeRepository @Inject() (db: Database)(implicit ec: ExecutionContext) extends BaseRepository(db) {
-
-  // --- Implementasi properti abstrak dari BaseRepository ---
-  // Kita harus mendefinisikan nama tabel yang akan digunakan oleh helper
+class MerchTypeRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRepositoryNew() {
   override protected val tableName: String = "merch_type"
 
-  // --- Metode CREATE (Tetap spesifik karena INSERT memerlukan daftar kolom) ---
-  def create(merchType: MerchType): Future[MerchType] = {
-    executeInsert(
+  def create(merchType: MerchType)(implicit connection: Connection): MerchType = {
+    val resultId = executeInsert(
       s"INSERT INTO $tableName(name, description) VALUES ({name}, {description})",
       "name"        -> merchType.name,
       "description" -> merchType.description
-    ).map { idOpt =>
-      // Setelah insert, kembalikan objek dengan ID yang sudah di-generate
-      merchType.copy(id = idOpt.get)
-    }
+    )
+
+    merchType.copy(id = resultId.get)
   }
 
-  // --- Metode CRUD yang Sekarang Menggunakan Helper dari BaseRepository ---
-
-  // GET by ID: Langsung panggil helper findById dari BaseRepository
-  def findById(id: Int): Future[Option[MerchType]] = {
-    // Kita meneruskan MerchType.parser secara eksplisit ke helper findById
+  def findById(id: Int)(implicit connection: Connection): Option[MerchType] = {
     super.findById[MerchType](id)(MerchType.parser)
   }
 
-  // GET ALL: Langsung panggil helper findAll dari BaseRepository
-  def findAll(): Future[Seq[MerchType]] = {
-    // Kita meneruskan MerchType.parser secara eksplisit ke helper findAll
+  def findAll()(implicit connection: Connection): Seq[MerchType] = {
     super.findAll[MerchType](MerchType.parser)
   }
 
-  // UPDATE: (Tetap spesifik karena UPDATE SET memerlukan daftar kolom yang spesifik)
-  def update(merchType: MerchType): Future[Option[MerchType]] = {
-    executeUpdate(
+  def update(merchType: MerchType)(implicit connection: Connection): Option[MerchType] = {
+    val affectedRows = executeUpdate(
       s"UPDATE $tableName SET name = {name}, description = {description}, updated_at = NOW() WHERE id = {id}",
-      "id"          -> merchType.id, // Asumsi ID selalu ada untuk update
+      "id"          -> merchType.id,
       "name"        -> merchType.name,
       "description" -> merchType.description
-    ).flatMap { affectedRows =>
-      // Setelah update, kita fetch ulang data terbaru untuk memastikan konsistensi
-      if (affectedRows > 0) findById(merchType.id) else Future.successful(None)
-    }
+    )
+
+    if (affectedRows > 0) findById(merchType.id) else None
   }
 
-  // DELETE (Hard Delete): Langsung panggil helper delete dari BaseRepository
-  def deleteMerchType(id: Int): Future[Int] = {
+  def deleteMerchType(id: Int)(implicit connection: Connection): Int = {
     super.delete(id)
   }
 
-  // SOFT DELETE: Langsung panggil helper softDelete dari BaseRepository
-  // Asumsi tabel `merch_type` memiliki kolom `is_delete` (sesuai evolusi yang kita buat)
-  def softDeleteMerchType(id: Int): Future[Boolean] = {
+  def softDeleteMerchType(id: Int)(implicit connection: Connection): Boolean = {
     super.softDelete(id)
   }
 }

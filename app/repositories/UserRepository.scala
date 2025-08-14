@@ -1,53 +1,53 @@
 package repositories
 
-import javax.inject.*
-import play.api.db.*
 import anorm.*
 import models.User
+import repositories.base.BaseRepositoryNew
 
-import scala.concurrent.{ExecutionContext, Future}
-import repositories.base.BaseRepository
+import java.sql.Connection
+import javax.inject.*
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class UserRepository @Inject() (db: Database)(implicit ec: ExecutionContext) extends BaseRepository(db) {
+class UserRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRepositoryNew() {
   override protected val tableName: String = "users"
 
-  def create(user: User.UserRequest): Future[User] = {
-    executeInsert(
+  def create(user: User.UserRequest)(implicit connection: Connection): User = {
+    val resultId = executeInsert(
       s"INSERT INTO $tableName(name, email, city_id, address, created_at, updated_at) VALUES ({name}, {email}, {cityId}, {address}, NOW(), NOW())",
       "name"    -> user.name,
       "email"   -> user.email,
       "cityId"  -> user.cityId,
       "address" -> user.address
-    ).map { idOpt =>
-      User(
-        id = idOpt.get,
-        name = user.name,
-        email = user.email,
-        cityId = user.cityId,
-        address = user.address,
-        createdAt = None,
-        updatedAt = None
-      )
-    }
+    )
+
+    User(
+      id = resultId.get,
+      name = user.name,
+      email = user.email,
+      cityId = user.cityId,
+      address = user.address,
+      createdAt = None,
+      updatedAt = None
+    )
   }
 
-  def findById(id: Int): Future[Option[User]] = {
+  def findById(id: Int)(implicit connection: Connection): Option[User] = {
     super.findById[User](id)(User.parser)
   }
 
-//  def findByEmail(email: String): Future[Option[User]] = {
-//    executeSingle[User](s"SELECT * FROM $tableName WHERE email = {email} AND is_delete = FALSE", "email" -> email)(
-//      User.parser
-//    )
-//  }
+  def findByEmail(email: String)(implicit connection: Connection): Option[User] = {
+    executeSingle[User](s"SELECT * FROM $tableName WHERE email = {email} AND is_delete = FALSE", "email" -> email)(
+      User.parser
+    )
+  }
 
-  def findAll(): Future[Seq[User]] = {
+  def findAll()(implicit connection: Connection): Seq[User] = {
     super.findAll[User](User.parser)
   }
 
-  def update(user: User): Future[Option[User]] = {
-    executeUpdate(
+  def update(user: User)(implicit connection: Connection): Option[User] = {
+    val affectedRows = executeUpdate(
       s"""
         |UPDATE $tableName
         |SET name = {name}, email = {email}, city_id = {cityId}, address = {address}, updated_at = NOW()
@@ -58,16 +58,16 @@ class UserRepository @Inject() (db: Database)(implicit ec: ExecutionContext) ext
       "email"   -> user.email,
       "cityId"  -> user.cityId,
       "address" -> user.address
-    ).flatMap { affectedRows =>
-      if (affectedRows > 0) findById(user.id) else Future.successful(None)
-    }
+    )
+
+    if (affectedRows > 0) findById(user.id) else None
   }
 
-  def deleteUser(id: Int): Future[Int] = {
+  def deleteUser(id: Int)(implicit connection: Connection): Int = {
     super.delete(id)
   }
 
-  def softDeleteUser(id: Int): Future[Boolean] = {
+  def softDeleteUser(id: Int)(implicit connection: Connection): Boolean = {
     super.softDelete(id)
   }
 }
