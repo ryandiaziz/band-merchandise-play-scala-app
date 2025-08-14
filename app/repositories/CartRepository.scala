@@ -35,7 +35,6 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
     if (affectedRows > 0) findById(cart.id) else None
   }
 
-  // --- Cart Merch Specific Operations ---
   def addMerchToCart(cartMerch: CartMerch)(implicit connection: Connection): CartMerch = {
     val resultId = executeInsert(
       s"""

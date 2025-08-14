@@ -35,21 +35,21 @@ class CartController @Inject() (
       )
   }
 
-  def getCart(id: Int) = Action.async {
+  def getCart(id: Int): Action[AnyContent] = Action.async {
     cartService.getCart(id).map {
       case Some(cart) => successWithMessage(Json.toJson(cart))
       case None       => notFoundError(s"Cart with ID $id not found")
     }
   }
 
-  def getUserActiveCart(userId: Int) = Action.async {
+  def getUserActiveCart(userId: Int): Action[AnyContent] = Action.async {
     cartService.getUserActiveCart(userId).map {
       case Some(cart) => successWithMessage(Json.toJson(cart))
       case None       => notFoundError(s"Active cart for User ID $userId not found")
     }
   }
 
-  def softDeleteCart(id: Int) = Action.async {
+  def softDeleteCart(id: Int): Action[AnyContent] = Action.async {
     cartService.softDeleteCart(id).map { success =>
       if (success) successMessage(s"Cart with ID $id soft-deleted successfully")
       else notFoundError(s"Cart with ID $id not found")
