@@ -61,9 +61,9 @@ class MerchandiseService @Inject() (
     }
   }
 
-  def getMerchandise(id: Int): Future[Option[Merchandise]] = Future {
+  def getMerchandise(id: Int): Future[Option[Merchandise.MerchandiseWithMerchType]] = Future {
     db.withConnection { implicit connection =>
-      merchandiseRepo.findById(id)
+      merchandiseRepo.findByIdDetail(id)
     }
   }
 

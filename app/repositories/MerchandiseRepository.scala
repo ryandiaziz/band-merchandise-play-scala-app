@@ -34,6 +34,18 @@ class MerchandiseRepository @Inject() ()(implicit ec: ExecutionContext) extends 
     super.findById[Merchandise](id)(Merchandise.parser)
   }
 
+  def findByIdDetail(id: Int)(implicit connection: Connection): Option[Merchandise.MerchandiseWithMerchType] = {
+    executeSingle[Merchandise.MerchandiseWithMerchType](
+      s"""
+        |SELECT m.*, mt.*
+        |FROM merchandise m
+        |JOIN merch_type mt ON m.merch_type_id = mt.id
+        |WHERE m.id = {id} AND m.is_delete = false
+        |""".stripMargin,
+      "id" -> id
+    )(Merchandise.merchWithMerchTypeParser)
+  }
+
   def findAll()(implicit connection: Connection): Seq[Merchandise] = {
     super.findAll[Merchandise](Merchandise.parser)
   }

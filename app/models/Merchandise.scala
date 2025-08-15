@@ -4,6 +4,7 @@ import anorm.*
 import anorm.SqlParser.*
 import play.api.libs.json.{Json, OWrites, Reads}
 import utils.JsonConfig
+
 import java.time.LocalDateTime
 
 case class Merchandise(
@@ -35,7 +36,7 @@ object Merchandise {
       JsonConfig.optionalField("updated_at", merch.updatedAt.map(_.toString))
     )
   }
-  
+
   val parser: RowParser[Merchandise] = (
     int("id") ~
       str("title") ~
@@ -51,6 +52,52 @@ object Merchandise {
     Merchandise(id, title, bandName, merchTypeId, desc, price, imageUrl, stock, createdAt, updatedAt)
   }
 
+  case class MerchandiseWithMerchType(
+      id: Int,
+      title: String,
+      bandName: String,
+      merchType: MerchType,
+      description: Option[String],
+      price: BigDecimal,
+      imageUrl: Option[String],
+      stock: Int,
+      createdAt: Option[LocalDateTime],
+      updatedAt: Option[LocalDateTime]
+  )
+
+  implicit val merchWithMerchTypeWrites: OWrites[MerchandiseWithMerchType] = OWrites[MerchandiseWithMerchType] { merch =>
+    Json.obj(
+      "id" -> merch.id,
+      "title" -> merch.title,
+      "band_name" -> merch.bandName,
+      "merch_type" -> merch.merchType,
+      "price" -> merch.price,
+      "stock" -> merch.stock,
+      JsonConfig.optionalField("image_url", merch.imageUrl),
+      JsonConfig.optionalField("description", merch.description),
+      JsonConfig.optionalField("created_at", merch.createdAt.map(_.toString)),
+      JsonConfig.optionalField("updated_at", merch.updatedAt.map(_.toString))
+    )
+  }
+
+  val merchWithMerchTypeParser: RowParser[MerchandiseWithMerchType] = (
+    Merchandise.parser ~
+      MerchType.parser
+  ) map { case merch ~ merchType =>
+    MerchandiseWithMerchType(
+      merch.id,
+      merch.title,
+      merch.bandName,
+      merchType,
+      merch.description,
+      merch.price,
+      merch.imageUrl,
+      merch.stock,
+      merch.createdAt,
+      merch.updatedAt
+    )
+  }
+
   case class MerchandiseRequest(
       title: String,
       bandName: String,
@@ -60,6 +107,6 @@ object Merchandise {
       imageUrl: Option[String],
       stock: Int
   )
-  
+
   implicit val merchandiseRequestReads: Reads[MerchandiseRequest] = Json.reads[MerchandiseRequest]
 }
