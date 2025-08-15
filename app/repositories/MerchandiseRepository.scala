@@ -39,8 +39,8 @@ class MerchandiseRepository @Inject() ()(implicit ec: ExecutionContext) extends 
       s"""
         |SELECT m.*, mt.*
         |FROM merchandise m
-        |JOIN merch_type mt ON m.merch_type_id = mt.id
-        |WHERE m.id = {id} AND m.is_delete = false
+        |JOIN merch_type mt ON m.merch_type_id = mt.merch_type_id
+        |WHERE m.merchandise_id = {id} AND m.is_delete = false
         |""".stripMargin,
       "id" -> id
     )(Merchandise.merchWithMerchTypeParser)

@@ -38,7 +38,7 @@ object Merchandise {
   }
 
   val parser: RowParser[Merchandise] = (
-    int("id") ~
+    int("merchandise_id") ~
       str("title") ~
       str("band_name") ~
       int("merch_type_id") ~
@@ -48,8 +48,9 @@ object Merchandise {
       int("stock") ~
       get[LocalDateTime]("created_at").? ~
       get[LocalDateTime]("updated_at").?
-  ) map { case id ~ title ~ bandName ~ merchTypeId ~ desc ~ price ~ imageUrl ~ stock ~ createdAt ~ updatedAt =>
-    Merchandise(id, title, bandName, merchTypeId, desc, price, imageUrl, stock, createdAt, updatedAt)
+  ) map {
+    case merchandiseId ~ title ~ bandName ~ merchTypeId ~ desc ~ price ~ imageUrl ~ stock ~ createdAt ~ updatedAt =>
+      Merchandise(merchandiseId, title, bandName, merchTypeId, desc, price, imageUrl, stock, createdAt, updatedAt)
   }
 
   case class MerchandiseWithMerchType(
@@ -65,19 +66,20 @@ object Merchandise {
       updatedAt: Option[LocalDateTime]
   )
 
-  implicit val merchWithMerchTypeWrites: OWrites[MerchandiseWithMerchType] = OWrites[MerchandiseWithMerchType] { merch =>
-    Json.obj(
-      "id" -> merch.id,
-      "title" -> merch.title,
-      "band_name" -> merch.bandName,
-      "merch_type" -> merch.merchType,
-      "price" -> merch.price,
-      "stock" -> merch.stock,
-      JsonConfig.optionalField("image_url", merch.imageUrl),
-      JsonConfig.optionalField("description", merch.description),
-      JsonConfig.optionalField("created_at", merch.createdAt.map(_.toString)),
-      JsonConfig.optionalField("updated_at", merch.updatedAt.map(_.toString))
-    )
+  implicit val merchWithMerchTypeWrites: OWrites[MerchandiseWithMerchType] = OWrites[MerchandiseWithMerchType] {
+    merch =>
+      Json.obj(
+        "id"         -> merch.id,
+        "title"      -> merch.title,
+        "band_name"  -> merch.bandName,
+        "merch_type" -> merch.merchType,
+        "price"      -> merch.price,
+        "stock"      -> merch.stock,
+        JsonConfig.optionalField("image_url", merch.imageUrl),
+        JsonConfig.optionalField("description", merch.description),
+        JsonConfig.optionalField("created_at", merch.createdAt.map(_.toString)),
+        JsonConfig.optionalField("updated_at", merch.updatedAt.map(_.toString))
+      )
   }
 
   val merchWithMerchTypeParser: RowParser[MerchandiseWithMerchType] = (
