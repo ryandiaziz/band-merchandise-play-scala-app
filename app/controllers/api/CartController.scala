@@ -35,6 +35,12 @@ class CartController @Inject() (
       )
   }
 
+  def getCartDetail(id: Int): Action[AnyContent] = Action.async {
+    cartService.getCartDetail(id).map { result =>
+      successWithMessage(Json.toJson(result))
+    }
+  }
+
   def getCart(id: Int): Action[AnyContent] = Action.async {
     cartService.getCart(id).map {
       case Some(cart) => successWithMessage(Json.toJson(cart))

@@ -16,9 +16,9 @@ class TransactionRepository @Inject() ()(implicit ec: ExecutionContext) extends 
     val resultId = executeInsert(
       s"""
         |INSERT INTO $tableName(cart_id, cart_price, delivery_service_price, total_price, created_at, updated_at)
-        |VALUES ({cartId}, {cartPrice}, {deliveryServicePrice}, {totalPrice}, NOW(), NOW())
+        |VALUES ({cart_id}, {cartPrice}, {deliveryServicePrice}, {totalPrice}, NOW(), NOW())
         |""".stripMargin,
-      "cartId"               -> transaction.cartId,
+      "cart_id"               -> transaction.cartId,
       "cartPrice"            -> transaction.cartPrice,
       "deliveryServicePrice" -> transaction.deliveryServicePrice,
       "totalPrice"           -> transaction.totalPrice
@@ -29,8 +29,8 @@ class TransactionRepository @Inject() ()(implicit ec: ExecutionContext) extends 
 
   def findByCartId(cartId: Int)(implicit connection: Connection): Option[Transaction] = {
     executeSingle[Transaction](
-      s"SELECT * FROM $tableName WHERE cart_id = {cartId} AND is_delete = FALSE",
-      "cartId" -> cartId
+      s"SELECT * FROM $tableName WHERE cart_id = {cart_id} AND is_delete = FALSE",
+      "cart_id" -> cartId
     )(Transaction.parser)
   }
 

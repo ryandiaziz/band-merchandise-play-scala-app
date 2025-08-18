@@ -1,7 +1,8 @@
 package repositories
 
 import anorm.*
-import models.{Cart, CartMerch}
+import anorm.SqlParser.long
+import models.{Cart, CartDetail, CartItem, CartMerch}
 import repositories.base.BaseRepositoryNew
 
 import java.sql.Connection
@@ -39,9 +40,9 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
     val resultId = executeInsert(
       s"""
         |INSERT INTO $cartMerchTableName(cart_id, merchandise_id, qty, unit_price, total_price, created_at, updated_at)
-        |VALUES ({cartId}, {merchandiseId}, {qty}, {unitPrice}, {totalPrice}, NOW(), NOW())
+        |VALUES ({cart_id}, {merchandiseId}, {qty}, {unitPrice}, {totalPrice}, NOW(), NOW())
         |""".stripMargin,
-      "cartId"        -> cartMerch.cartId,
+      "cart_id"        -> cartMerch.cartId,
       "merchandiseId" -> cartMerch.merchandiseId,
       "qty"           -> cartMerch.qty,
       "unitPrice"     -> cartMerch.unitPrice,
@@ -53,8 +54,8 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
 
   def findCartMerchByCartId(cartId: Int)(implicit connection: Connection): Seq[CartMerch] = {
     executeList[CartMerch](
-      s"SELECT * FROM $cartMerchTableName WHERE cart_id = {cartId} AND is_delete = FALSE",
-      "cartId" -> cartId
+      s"SELECT * FROM $cartMerchTableName WHERE cart_id = {cart_id} AND is_delete = FALSE",
+      "cart_id" -> cartId
     )(CartMerch.parser)
   }
 
@@ -62,13 +63,20 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
       connection: Connection
   ): Option[CartMerch] = {
     executeSingle[CartMerch](
-      s"SELECT * FROM $cartMerchTableName WHERE cart_id = {cartId} AND merchandise_id = {merchandiseId} AND is_delete = FALSE",
-      "cartId"        -> cartId,
+      s"SELECT * FROM $cartMerchTableName WHERE cart_id = {cart_id} AND merchandise_id = {merchandiseId} AND is_delete = FALSE",
+      "cart_id"        -> cartId,
       "merchandiseId" -> merchandiseId
     )(CartMerch.parser)
   }
 
   def findUserActiveCart(userId: Int)(implicit connection: Connection): Option[Cart] = {
+    executeSingle[Cart](
+      s"SELECT * FROM $tableName WHERE user_id = {userId} AND status = 'active' AND is_delete = FALSE",
+      "userId" -> userId
+    )(Cart.parser)
+  }
+
+  def findUserActiveCartDetail(userId: Int)(implicit connection: Connection): Option[Cart] = {
     executeSingle[Cart](
       s"SELECT * FROM $tableName WHERE user_id = {userId} AND status = 'active' AND is_delete = FALSE",
       "userId" -> userId
@@ -88,6 +96,27 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
       "qty"        -> newQty,
       "totalPrice" -> newTotalPrice
     )
+  }
+
+  def findByIdDetail(id: Int)(implicit connection: Connection): Seq[CartDetail.ParseTemp] = {
+    val query = """
+        SELECT c.*, u.*, cm.*, m.*
+        FROM
+            cart AS c
+        JOIN
+            users AS u ON c.user_id = u.id
+        JOIN
+            cart_merch AS cm ON c.id = cm.cart_id
+        JOIN
+            merchandise AS m ON cm.merchandise_id = m.id
+        WHERE
+            c.id = {cart_id}
+      """
+
+    executeList[CartDetail.ParseTemp](
+      query,
+      "cart_id" -> id
+    )(CartDetail.parser)
   }
 
   def findById(id: Int)(implicit connection: Connection): Option[Cart] = {

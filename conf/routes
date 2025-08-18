@@ -33,6 +33,7 @@ DELETE          /api/users/:id                              controllers.api.User
 # --- Cart Routes ---
 POST            /api/cart/add-item                          controllers.api.CartController.addItemToCart()
 GET             /api/cart/:id                               controllers.api.CartController.getCart(id: Int)
+GET             /api/cart/detail/:id                        controllers.api.CartController.getCartDetail(id: Int)
 GET             /api/cart/user/:userId/active               controllers.api.CartController.getUserActiveCart(userId: Int)
 DELETE          /api/cart/:id                               controllers.api.CartController.softDeleteCart(id: Int)
 
