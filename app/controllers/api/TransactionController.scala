@@ -52,6 +52,12 @@ class TransactionController @Inject() (
     }
   }
 
+  def getAllTransactionsDetail: Action[AnyContent] = Action.async {
+    transactionService.getAllTransactionsDetail.map { transactions =>
+      successWithMessage(Json.toJson(transactions))
+    }
+  }
+
   def updateTransaction(id: Int): Action[JsValue] = Action(parse.json).async { implicit request =>
     request.body
       .validate[Transaction]
