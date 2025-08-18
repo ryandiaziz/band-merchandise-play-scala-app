@@ -40,12 +40,12 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
     val resultId = executeInsert(
       s"""
         |INSERT INTO $cartMerchTableName(cart_id, merchandise_id, qty, unit_price, total_price, created_at, updated_at)
-        |VALUES ({cart_id}, {merchandiseId}, {qty}, {unitPrice}, {totalPrice}, NOW(), NOW())
+        |VALUES ({cart_id}, {merchandise_id}, {qty}, {unit_price}, {totalPrice}, NOW(), NOW())
         |""".stripMargin,
       "cart_id"        -> cartMerch.cartId,
-      "merchandiseId" -> cartMerch.merchandiseId,
+      "merchandise_id" -> cartMerch.merchandiseId,
       "qty"           -> cartMerch.qty,
-      "unitPrice"     -> cartMerch.unitPrice,
+      "unit_price"     -> cartMerch.unitPrice,
       "totalPrice"    -> cartMerch.totalPrice
     )
 
@@ -63,9 +63,9 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
       connection: Connection
   ): Option[CartMerch] = {
     executeSingle[CartMerch](
-      s"SELECT * FROM $cartMerchTableName WHERE cart_id = {cart_id} AND merchandise_id = {merchandiseId} AND is_delete = FALSE",
+      s"SELECT * FROM $cartMerchTableName WHERE cart_id = {cart_id} AND merchandise_id = {merchandise_id} AND is_delete = FALSE",
       "cart_id"        -> cartId,
-      "merchandiseId" -> merchandiseId
+      "merchandise_id" -> merchandiseId
     )(CartMerch.parser)
   }
 
@@ -76,11 +76,28 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
     )(Cart.parser)
   }
 
-  def findUserActiveCartDetail(userId: Int)(implicit connection: Connection): Option[Cart] = {
-    executeSingle[Cart](
-      s"SELECT * FROM $tableName WHERE user_id = {userId} AND status = 'active' AND is_delete = FALSE",
+  def findUserActiveCartDetail(userId: Int)(implicit connection: Connection): Seq[CartDetail.ParseTemp] = {
+    val query =
+      """
+            SELECT c.*, u.*, cm.*, m.*
+            FROM
+              cart AS c
+            JOIN
+              users AS u ON c.user_id = u.id
+            JOIN
+              cart_merch AS cm ON c.id = cm.cart_id
+            JOIN
+              merchandise AS m ON cm.merchandise_id = m.id
+            WHERE
+              user_id = {userId}
+            AND
+              status = 'active'
+          """
+
+    executeList[CartDetail.ParseTemp](
+      query,
       "userId" -> userId
-    )(Cart.parser)
+    )(CartDetail.parser)
   }
 
   def updateCartMerchQty(cartMerchId: Int, newQty: Int, newTotalPrice: BigDecimal)(implicit
@@ -102,13 +119,13 @@ class CartRepository @Inject() ()(implicit ec: ExecutionContext) extends BaseRep
     val query = """
         SELECT c.*, u.*, cm.*, m.*
         FROM
-            cart AS c
+          cart AS c
         JOIN
-            users AS u ON c.user_id = u.id
+          users AS u ON c.user_id = u.id
         JOIN
-            cart_merch AS cm ON c.id = cm.cart_id
+          cart_merch AS cm ON c.id = cm.cart_id
         JOIN
-            merchandise AS m ON cm.merchandise_id = m.id
+          merchandise AS m ON cm.merchandise_id = m.id
         WHERE
             c.id = {cart_id}
       """

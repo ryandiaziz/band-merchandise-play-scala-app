@@ -39,13 +39,13 @@ object CartDetail {
       cartCreatedAt = cart.createdAt,
       user = user,
       cartItem = CartItem(
-        merchandiseId = merchandise.id,
+        merchandise_id = merchandise.id,
         title = merchandise.title,
-        bandName = merchandise.bandName,
+        band_name = merchandise.bandName,
         description = merchandise.description,
-        imageUrl = merchandise.imageUrl,
+        image_url = merchandise.imageUrl,
         qty = cartMerch.qty,
-        unitPrice = cartMerch.unitPrice
+        unit_price = cartMerch.unitPrice
       )
     )
   }

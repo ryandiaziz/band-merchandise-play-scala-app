@@ -4,25 +4,25 @@ import play.api.libs.json.{Json, OWrites}
 import utils.JsonConfig
 
 case class CartItem(
-    merchandiseId: Long,
+    merchandise_id: Long,
     title: String,
-    bandName: String,
+    band_name: String,
     description: Option[String],
-    imageUrl: Option[String],
+    image_url: Option[String],
     qty: Int,
-    unitPrice: BigDecimal
+    unit_price: BigDecimal
 )
 
 object CartItem {
   implicit val cartItemWrites: OWrites[CartItem] = OWrites[CartItem] { item =>
     Json.obj(
-      "merchandiseId" -> item.merchandiseId,
-      "title"         -> item.title,
-      "bandName"      -> item.bandName,
-      "qty"           -> item.qty,
-      "unitPrice"     -> item.unitPrice,
+      "merchandise_id" -> item.merchandise_id,
+      "title"          -> item.title,
+      "band_name"      -> item.band_name,
+      "qty"            -> item.qty,
+      "unit_price"     -> item.unit_price,
       JsonConfig.optionalField("description", item.description),
-      JsonConfig.optionalField("imageUrl", item.imageUrl)
+      JsonConfig.optionalField("image_url", item.image_url)
     )
   }
 }

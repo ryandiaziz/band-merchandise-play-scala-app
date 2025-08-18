@@ -16,14 +16,14 @@ class MerchandiseRepository @Inject() ()(implicit ec: ExecutionContext) extends 
     val resultId = executeInsert(
       s"""
         |INSERT INTO $tableName(title, band_name, merch_type_id, description, price, image_url, stock, created_at, updated_at)
-        |VALUES ({title}, {bandName}, {merchTypeId}, {description}, {price}, {imageUrl}, {stock}, NOW(), NOW())
+        |VALUES ({title}, {band_name}, {merchTypeId}, {description}, {price}, {image_url}, {stock}, NOW(), NOW())
         |""".stripMargin,
       "title"       -> merchandise.title,
-      "bandName"    -> merchandise.bandName,
+      "band_name"    -> merchandise.bandName,
       "merchTypeId" -> merchandise.merchTypeId,
       "description" -> merchandise.description,
       "price"       -> merchandise.price,
-      "imageUrl"    -> merchandise.imageUrl,
+      "image_url"    -> merchandise.imageUrl,
       "stock"       -> merchandise.stock
     )
 
@@ -56,18 +56,18 @@ class MerchandiseRepository @Inject() ()(implicit ec: ExecutionContext) extends 
     val affectedRows = executeUpdate(
       s"""
         |UPDATE $tableName
-        |SET title = {title}, band_name = {bandName}, merch_type_id = {merchTypeId},
-        |description = {description}, price = {price}, image_url = {imageUrl},
+        |SET title = {title}, band_name = {band_name}, merch_type_id = {merchTypeId},
+        |description = {description}, price = {price}, image_url = {image_url},
         |stock = {stock}, updated_at = NOW()
         |WHERE id = {id}
         |""".stripMargin,
       "id"          -> id,
       "title"       -> merchandiseReq.title,
-      "bandName"    -> merchandiseReq.bandName,
+      "band_name"    -> merchandiseReq.bandName,
       "merchTypeId" -> merchandiseReq.merchTypeId,
       "description" -> merchandiseReq.description,
       "price"       -> merchandiseReq.price,
-      "imageUrl"    -> merchandiseReq.imageUrl,
+      "image_url"    -> merchandiseReq.imageUrl,
       "stock"       -> merchandiseReq.stock
     )
 

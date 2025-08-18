@@ -113,6 +113,26 @@ class CartService @Inject() (
     }
   }
 
+  def getUserActiveCartDetail(userId: Int): Future[CartDetail] = Future {
+    db.withConnection { implicit connection =>
+      val cartDetailTmp = cartRepo.findUserActiveCartDetail(userId)
+
+      if (cartDetailTmp.isEmpty) throw new Exception("Data tidak ditemukan")
+
+      val cart = cartDetailTmp.head
+      val cartItems = cartDetailTmp.map(_.cartItem)
+
+      CartDetail(
+        cart_id = cart.cartId,
+        cart_total_price = cart.cartTotalPrice,
+        status = cart.status,
+        created_at = cart.cartCreatedAt,
+        user = cart.user,
+        items = cartItems
+      )
+    }
+  }
+
   def getUserActiveCart(userId: Int): Future[Option[Cart]] = Future {
     db.withConnection { implicit connection =>
       cartRepo.findUserActiveCart(userId)

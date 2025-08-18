@@ -55,6 +55,12 @@ class CartController @Inject() (
     }
   }
 
+  def getUserActiveCartDetail(userId: Int): Action[AnyContent] = Action.async {
+    cartService.getUserActiveCartDetail(userId).map { result =>
+      successWithMessage(Json.toJson(result))
+    }
+  }
+
   def softDeleteCart(id: Int): Action[AnyContent] = Action.async {
     cartService.softDeleteCart(id).map { success =>
       if (success) successMessage(s"Cart with ID $id soft-deleted successfully")
