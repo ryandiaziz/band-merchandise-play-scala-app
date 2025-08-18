@@ -29,12 +29,12 @@ object Cart {
     )
   }
   val parser: RowParser[Cart] = (
-    int("id") ~
-      int("user_id") ~
-      get[BigDecimal]("price") ~
-      str("status") ~
-      get[LocalDateTime]("created_at").? ~
-      get[LocalDateTime]("updated_at").?
+    int("cart.id") ~
+      int("cart.user_id") ~
+      get[BigDecimal]("cart.price") ~
+      str("cart.status") ~
+      get[LocalDateTime]("cart.created_at").? ~
+      get[LocalDateTime]("cart.updated_at").?
   ) map { case id ~ userId ~ price ~ status ~ createdAt ~ updatedAt =>
     Cart(id, userId, price, status, createdAt, updatedAt)
   }

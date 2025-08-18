@@ -2,9 +2,9 @@ package error
 
 import play.api.*
 import play.api.http.DefaultHttpErrorHandler
-import play.api.libs.json.Json
-import play.api.mvc.Results.*
+import play.api.libs.json.{JsNull, Json}
 import play.api.mvc.*
+import play.api.mvc.Results.*
 import play.api.routing.Router
 import play.twirl.api.Html
 
@@ -49,8 +49,9 @@ class CustomErrorHandler @Inject() (
   private def jsonError(message: String, code: Int): Result = {
     Results.Status(code)(
       Json.obj(
-        "status"  -> "error",
-        "message" -> message
+        "status"  -> false,
+        "message" -> message,
+        "data"    -> JsNull
       )
     )
   }

@@ -38,16 +38,16 @@ object Merchandise {
   }
 
   val parser: RowParser[Merchandise] = (
-    int("merchandise_id") ~
-      str("title") ~
-      str("band_name") ~
-      int("merch_type_id") ~
-      str("description").? ~
-      get[BigDecimal]("price") ~
-      str("image_url").? ~
-      int("stock") ~
-      get[LocalDateTime]("created_at").? ~
-      get[LocalDateTime]("updated_at").?
+    int("merchandise.id") ~
+      str("merchandise.title") ~
+      str("merchandise.band_name") ~
+      int("merchandise.merch_type_id") ~
+      str("merchandise.description").? ~
+      get[BigDecimal]("merchandise.price") ~
+      str("merchandise.image_url").? ~
+      int("merchandise.stock") ~
+      get[LocalDateTime]("merchandise.created_at").? ~
+      get[LocalDateTime]("merchandise.updated_at").?
   ) map {
     case merchandiseId ~ title ~ bandName ~ merchTypeId ~ desc ~ price ~ imageUrl ~ stock ~ createdAt ~ updatedAt =>
       Merchandise(merchandiseId, title, bandName, merchTypeId, desc, price, imageUrl, stock, createdAt, updatedAt)

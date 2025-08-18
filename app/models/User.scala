@@ -29,13 +29,13 @@ object User {
     )
   }
   val parser: RowParser[User] = (
-    int("id") ~
-      str("name") ~
-      str("email") ~
-      int("city_id").? ~
-      str("address").? ~
-      get[LocalDateTime]("created_at").? ~
-      get[LocalDateTime]("updated_at").?
+    int("users.id") ~
+      str("users.name") ~
+      str("users.email") ~
+      int("users.city_id").? ~
+      str("users.address").? ~
+      get[LocalDateTime]("users.created_at").? ~
+      get[LocalDateTime]("users.updated_at").?
   ) map { case id ~ name ~ email ~ cityId ~ address ~ createdAt ~ updatedAt =>
     User(id, name, email, cityId, address, createdAt, updatedAt)
   }

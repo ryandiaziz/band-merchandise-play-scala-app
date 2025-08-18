@@ -29,12 +29,17 @@ class CartService @Inject() (
         throw new Exception(s"Stok ${merchandise.title} tidak cukup. Tersedia: ${merchandise.stock}")
       }
 
-      val currentCartOpt = request.cartId.flatMap(cartRepo.findById)
+      val currentCartOpt = request.cartId match {
+        case Some(cartId) => cartRepo.findById(cartId)
+        case None         => cartRepo.findUserActiveCart(request.userId)
+      }
+
       val cart = currentCartOpt match {
-        case Some(c) =>
+        case Some(c) => {
           if (c.userId != request.userId) throw new Exception("Cart does not belong to the specified user.")
           else c
-        case None =>
+        }
+        case None => {
           cartRepo.create(
             Cart(
               userId = request.userId,
@@ -44,6 +49,7 @@ class CartService @Inject() (
               updatedAt = Some(LocalDateTime.now())
             )
           )
+        }
       }
 
       // --- Operasi Tulis di Sini ---
@@ -52,12 +58,13 @@ class CartService @Inject() (
 
       val existingCartMerchOpt = cartRepo.findCartMerchByCartIdAndMerchandiseId(cart.id, merchandise.id)
       existingCartMerchOpt match {
-        case Some(existingCartMerch) =>
-          val newQty        = existingCartMerch.qty + request.qty
+        case Some(existingCartMerch) => {
+          val newQty = existingCartMerch.qty + request.qty
           val newTotalPrice = existingCartMerch.unitPrice * BigDecimal(newQty)
           cartRepo.updateCartMerchQty(existingCartMerch.id, newQty, newTotalPrice)
-        case None =>
-          val unitPrice      = merchandise.price
+        }
+        case None => {
+          val unitPrice = merchandise.price
           val totalPriceItem = unitPrice * BigDecimal(request.qty)
           val newCartMerch = CartMerch(
             cartId = cart.id,
@@ -69,6 +76,7 @@ class CartService @Inject() (
             updatedAt = Some(LocalDateTime.now())
           )
           cartRepo.addMerchToCart(newCartMerch)
+        }
       }
 
       val allCartMerchItems = cartRepo.findCartMerchByCartId(cart.id)

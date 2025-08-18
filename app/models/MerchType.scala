@@ -28,11 +28,11 @@ object MerchType {
   }
 
   val parser: RowParser[MerchType] = (
-    int("merch_type_id") ~
-      str("name") ~
-      str("description").? ~
-      get[LocalDateTime]("created_at").? ~
-      get[LocalDateTime]("updated_at").?
+    int("merch_type.id") ~
+      str("merch_type.name") ~
+      str("merch_type.description").? ~
+      get[LocalDateTime]("merch_type.created_at").? ~
+      get[LocalDateTime]("merch_type.updated_at").?
   ) map { case merchTypeId ~ name ~ desc ~ createdAt ~ updatedAt =>
     MerchType(merchTypeId, name, desc, createdAt, updatedAt)
   }

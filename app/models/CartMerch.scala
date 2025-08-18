@@ -33,14 +33,14 @@ object CartMerch {
     )
   }
   val parser: RowParser[CartMerch] = (
-    int("id") ~
-      int("cart_id") ~
-      int("merchandise_id") ~
-      int("qty") ~
-      get[BigDecimal]("unit_price") ~
-      get[BigDecimal]("total_price") ~
-      get[LocalDateTime]("created_at").? ~
-      get[LocalDateTime]("updated_at").?
+    int("cart_merch.id") ~
+      int("cart_merch.cart_id") ~
+      int("cart_merch.merchandise_id") ~
+      int("cart_merch.qty") ~
+      get[BigDecimal]("cart_merch.unit_price") ~
+      get[BigDecimal]("cart_merch.total_price") ~
+      get[LocalDateTime]("cart_merch.created_at").? ~
+      get[LocalDateTime]("cart_merch.updated_at").?
   ) map { case id ~ cartId ~ merchandiseId ~ qty ~ unitPrice ~ totalPrice ~ createdAt ~ updatedAt =>
     CartMerch(id, cartId, merchandiseId, qty, unitPrice, totalPrice, createdAt, updatedAt)
   }

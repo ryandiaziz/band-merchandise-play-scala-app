@@ -32,13 +32,13 @@ object Transaction {
   }
 
   val parser: RowParser[Transaction] = (
-    int("id") ~
-      int("cart_id") ~
-      get[BigDecimal]("cart_price") ~
-      get[BigDecimal]("delivery_service_price") ~
-      get[BigDecimal]("total_price") ~
-      get[LocalDateTime]("created_at").? ~
-      get[LocalDateTime]("updated_at").?
+    int("transactions.id") ~
+      int("transactions.cart_id") ~
+      get[BigDecimal]("transactions.cart_price") ~
+      get[BigDecimal]("transactions.delivery_service_price") ~
+      get[BigDecimal]("transactions.total_price") ~
+      get[LocalDateTime]("transactions.created_at").? ~
+      get[LocalDateTime]("transactions.updated_at").?
   ) map { case id ~ cartId ~ cartPrice ~ deliveryPrice ~ totalPrice ~ createdAt ~ updatedAt =>
     Transaction(id, cartId, cartPrice, deliveryPrice, totalPrice, createdAt, updatedAt)
   }
