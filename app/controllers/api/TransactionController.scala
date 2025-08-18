@@ -40,6 +40,12 @@ class TransactionController @Inject() (
     }
   }
 
+  def getTransactionDetail(id: Int): Action[AnyContent] = Action.async {
+    transactionService.getTransactionDetail(id).map { transaction =>
+      successWithMessage(Json.toJson(transaction))
+    }
+  }
+
   def getAllTransactions: Action[AnyContent] = Action.async {
     transactionService.getAllTransactions.map { transactions =>
       successWithMessage(Json.toJson(transactions))

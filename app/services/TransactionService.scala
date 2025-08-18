@@ -1,6 +1,6 @@
 package services
 
-import models.Transaction
+import models.{CartDetail, Transaction}
 import play.api.db.Database
 import repositories.{CartRepository, TransactionRepository}
 
@@ -48,6 +48,43 @@ class TransactionService @Inject() (
   def getTransaction(id: Int): Future[Option[Transaction]] = Future {
     db.withConnection { implicit connection =>
       transactionRepo.findById(id)
+    }
+  }
+
+  def getTransactionDetail(id: Int): Future[Transaction.Detail] = Future {
+    db.withTransaction { implicit connection =>
+      val transaction = transactionRepo.findById(id)
+      
+      transaction match {
+        case Some(t) => {
+          val cartDetailTmp = cartRepo.findByIdDetail(t.cartId)
+          
+          if (cartDetailTmp.isEmpty) throw new Exception("Data tidak ditemukan")
+
+          val cart = cartDetailTmp.head
+          val cartItems = cartDetailTmp.map(_.cartItem)
+
+          val cartDetail = CartDetail(
+            cart_id = cart.cartId,
+            cart_total_price = cart.cartTotalPrice,
+            status = cart.status,
+            created_at = cart.cartCreatedAt,
+            user = cart.user,
+            items = cartItems
+          )
+          
+          Transaction.Detail(
+            id= t.id,
+            cartPrice = t.cartPrice,
+            deliveryServicePrice = t.deliveryServicePrice,
+            totalPrice = t.totalPrice,
+            cart = cartDetail,
+            createdAt = t.createdAt,
+            updatedAt = t.updatedAt
+          )
+        }
+        case None => throw new Exception("Data transaksi tidak ditemukan")
+      }
     }
   }
 

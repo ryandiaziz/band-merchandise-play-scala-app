@@ -49,4 +49,26 @@ object Transaction {
   )
 
   implicit val createTransactionRequestReads: Reads[CreateTransactionRequest] = Json.reads[CreateTransactionRequest]
+
+  case class Detail(
+      id: Int = -1,
+      cartPrice: BigDecimal,
+      deliveryServicePrice: BigDecimal,
+      totalPrice: BigDecimal,
+      cart: CartDetail,
+      createdAt: Option[LocalDateTime] = None,
+      updatedAt: Option[LocalDateTime] = None
+  )
+
+  implicit val transactionDetailWrites: OWrites[Detail] = OWrites[Detail] { transaction =>
+    Json.obj(
+      "id"                     -> transaction.id,
+      "cart_price"             -> transaction.cartPrice,
+      "delivery_service_price" -> transaction.deliveryServicePrice,
+      "total_price"            -> transaction.totalPrice,
+      "cart"                   -> transaction.cart,
+      JsonConfig.optionalField("created_at", transaction.createdAt.map(_.toString)),
+      JsonConfig.optionalField("updated_at", transaction.updatedAt.map(_.toString))
+    )
+  }
 }
