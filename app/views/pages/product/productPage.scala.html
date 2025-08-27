@@ -2,66 +2,110 @@
 
 <div class="container">
     <div class="header">
-        <h1>Merchandise Store</h1>
-        <p>Temukan merchandise band favorit Anda</p>
+        <h1>🛍️ Merchandise Store</h1>
+        <p>Discover amazing band merchandise</p>
     </div>
 
-    <div class="controls">
-        <button class="btn" onclick="openAddProductModal()">Tambah Produk</button>
-        <div class="cart-summary">
-            <span id="cart-count">0 item</span>
-            <span id="cart-total">Rp 0</span>
-            <button class="btn btn-success" onclick="openCartModal()">Lihat Keranjang</button>
+        <!-- Cart Summary -->
+    <div class="cart-summary" id="cartSummary" onclick="openCartModal()">
+        🛒 Cart (<span id="cartCount">0</span>)
+    </div>
+
+        <!-- Navigation Tabs -->
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('products')">Products</button>
+        <button class="tab" onclick="showTab('cart')">Cart</button>
+        <button class="tab" onclick="showTab('merchtypes')">Merchandise Types</button>
+        <button class="tab" onclick="showTab('transactions')">Transaction History</button>
+    </div>
+
+        <!-- Products Tab -->
+    <div id="products" class="tab-content active">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2>Products</h2>
+            <button class="btn" onclick="openAddProductModal()">Add New Product</button>
         </div>
+        <div id="productsContainer" class="loading">Loading products...</div>
     </div>
 
-    <div id="products-container">
-        <div class="loading">Memuat produk...</div>
+        <!-- Cart Tab -->
+    <div id="cart" class="tab-content">
+        <h2>Shopping Cart</h2>
+        <div id="cartContainer" class="loading">Loading cart...</div>
+    </div>
+
+        <!-- Merchandise Types Tab -->
+    <div id="merchtypes" class="tab-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2>Merchandise Types</h2>
+            <button class="btn" onclick="openAddMerchTypeModal()">Add New Type</button>
+        </div>
+        <div id="merchTypesContainer" class="loading">Loading merchandise types...</div>
+    </div>
+
+        <!-- Transactions Tab -->
+    <div id="transactions" class="tab-content">
+        <h2>Transaction History</h2>
+        <div id="transactionsContainer" class="loading">Loading transactions...</div>
     </div>
 </div>
 
     <!-- Add Product Modal -->
 <div id="addProductModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeAddProductModal()">&times;</span>
-        <h2>Tambah Produk Baru</h2>
+        <span class="close" onclick="closeModal('addProductModal')">&times;</span>
+        <h2>Add New Product</h2>
         <form id="addProductForm">
             <div class="form-group">
-                <label for="title">Nama Produk:</label>
-                <input type="text" id="title" name="title" required>
+                <label for="productTitle">Title:</label>
+                <input type="text" id="productTitle" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="bandName">Nama Band:</label>
-                <input type="text" id="bandName" name="bandName" required>
+                <label for="productBandName">Band Name:</label>
+                <input type="text" id="productBandName" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="merchTypeId">Tipe Merchandise:</label>
-                <select id="merchTypeId" name="merchTypeId" required>
-                    <option value="">Pilih Tipe</option>
-                    <option value="1">T-Shirt</option>
-                    <option value="2">Hoodie</option>
-                    <option value="3">Aksesoris</option>
-                    <option value="4">CD/Vinyl</option>
-                    <option value="5">Poster</option>
+                <label for="productMerchType">Merchandise Type:</label>
+                <select id="productMerchType" class="form-control" required>
+                    <option value="">Select Type</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="description">Deskripsi:</label>
-                <textarea id="description" name="description"></textarea>
+                <label for="productDescription">Description:</label>
+                <textarea id="productDescription" class="form-control" rows="3"></textarea>
             </div>
             <div class="form-group">
-                <label for="price">Harga:</label>
-                <input type="number" id="price" name="price" min="0" step="1000" required>
+                <label for="productPrice">Price:</label>
+                <input type="number" id="productPrice" class="form-control" step="0.01" required>
             </div>
             <div class="form-group">
-                <label for="imageUrl">URL Gambar:</label>
-                <input type="url" id="imageUrl" name="imageUrl">
+                <label for="productImageUrl">Image URL:</label>
+                <input type="url" id="productImageUrl" class="form-control">
             </div>
             <div class="form-group">
-                <label for="stock">Stok:</label>
-                <input type="number" id="stock" name="stock" min="0" required>
+                <label for="productStock">Stock:</label>
+                <input type="number" id="productStock" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-success">Tambah Produk</button>
+            <button type="submit" class="btn">Add Product</button>
+        </form>
+    </div>
+</div>
+
+    <!-- Add Merchandise Type Modal -->
+<div id="addMerchTypeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('addMerchTypeModal')">&times;</span>
+        <h2>Add New Merchandise Type</h2>
+        <form id="addMerchTypeForm">
+            <div class="form-group">
+                <label for="merchTypeName">Name:</label>
+                <input type="text" id="merchTypeName" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="merchTypeDescription">Description:</label>
+                <textarea id="merchTypeDescription" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn">Add Type</button>
         </form>
     </div>
 </div>
@@ -69,10 +113,8 @@
     <!-- Cart Modal -->
 <div id="cartModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeCartModal()">&times;</span>
-        <h2>Keranjang Belanja</h2>
-        <div id="cart-items">
-            <div class="loading">Memuat keranjang...</div>
-        </div>
+        <span class="close" onclick="closeModal('cartModal')">&times;</span>
+        <h2>Shopping Cart</h2>
+        <div id="cartModalContent"></div>
     </div>
 </div>
