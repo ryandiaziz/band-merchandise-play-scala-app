@@ -1,0 +1,78 @@
+@()
+
+<div class="container">
+    <div class="header">
+        <h1>Merchandise Store</h1>
+        <p>Temukan merchandise band favorit Anda</p>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="openAddProductModal()">Tambah Produk</button>
+        <div class="cart-summary">
+            <span id="cart-count">0 item</span>
+            <span id="cart-total">Rp 0</span>
+            <button class="btn btn-success" onclick="openCartModal()">Lihat Keranjang</button>
+        </div>
+    </div>
+
+    <div id="products-container">
+        <div class="loading">Memuat produk...</div>
+    </div>
+</div>
+
+    <!-- Add Product Modal -->
+<div id="addProductModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddProductModal()">&times;</span>
+        <h2>Tambah Produk Baru</h2>
+        <form id="addProductForm">
+            <div class="form-group">
+                <label for="title">Nama Produk:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="bandName">Nama Band:</label>
+                <input type="text" id="bandName" name="bandName" required>
+            </div>
+            <div class="form-group">
+                <label for="merchTypeId">Tipe Merchandise:</label>
+                <select id="merchTypeId" name="merchTypeId" required>
+                    <option value="">Pilih Tipe</option>
+                    <option value="1">T-Shirt</option>
+                    <option value="2">Hoodie</option>
+                    <option value="3">Aksesoris</option>
+                    <option value="4">CD/Vinyl</option>
+                    <option value="5">Poster</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Deskripsi:</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Harga:</label>
+                <input type="number" id="price" name="price" min="0" step="1000" required>
+            </div>
+            <div class="form-group">
+                <label for="imageUrl">URL Gambar:</label>
+                <input type="url" id="imageUrl" name="imageUrl">
+            </div>
+            <div class="form-group">
+                <label for="stock">Stok:</label>
+                <input type="number" id="stock" name="stock" min="0" required>
+            </div>
+            <button type="submit" class="btn btn-success">Tambah Produk</button>
+        </form>
+    </div>
+</div>
+
+    <!-- Cart Modal -->
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCartModal()">&times;</span>
+        <h2>Keranjang Belanja</h2>
+        <div id="cart-items">
+            <div class="loading">Memuat keranjang...</div>
+        </div>
+    </div>
+</div>

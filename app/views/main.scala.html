@@ -1,3 +1,5 @@
+@import views.html.pages.product.productPage
+
 @(title: String)(content: Html)
 
 <!DOCTYPE html>
@@ -8,7 +10,7 @@
     </head>
     <body>
         @layout(){
-            @content
+            @productPage()
         }
         @scripts()
     </body>
